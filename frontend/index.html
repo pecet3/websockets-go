@@ -31,7 +31,7 @@
 <script>
     let selectedChat = "general"
 
-    function changeChatroom(){
+    function changeChatRoom(){
         const newChat = document.getElementById("chatroom")
 
         if(newChat!== null && newChat.value != selectedChat){
@@ -52,7 +52,18 @@
         return false
     }
 
+    window.onload = function (){
+        document.getElementById("chatroom-select").onsubmit = changeChatRoom
+        document.getElementById("chatroom-message").onsubmit = sendMessage
 
+        if(window["WebSocket"])
+        {
+            console.log("supporting websockets")
+        } else {
+            alert("Your browser doesn't support websockets")
+        }
+        
+    }   
     </script>
 
 
