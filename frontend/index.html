@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Chat</title>
+</head>
+<body class="bg-slate-200">
+<section class="">
+    <h1>Chat</h1>
+    <form id="chatroom-select">
+        <label for="chatroom" >Chatroom:</label>
+        <input type="text" id="chatroom" name="chatroom"><br>
+        <input type="submit" value="Change chatroom">
+
+    </form>
+
+    <textarea class="message" id="chatmessages" readonly name="chatmessages"
+    rows="4" cols="50"></textarea>
+
+    <br>
+
+    <form id="chatroom-message">
+        <label for="message">Message:</label>
+        <input type="text" id="message" name="message"><br> <br>
+        <input type="submit" valu="Send message">
+    </form>
+</section>
+
+<script>
+    let selectedChat = "general"
+
+    function changeChatroom(){
+        const newChat = document.getElementById("chatroom")
+
+        if(newChat!== null && newChat.value != selectedChat){
+            console.log(newChat)
+
+        }
+        return false
+
+    }
+
+    function sendMessage(){
+        const newMessage = document.getElementById("message")
+
+        if(newChat!== null && newChat.value != selectedChat){
+            console.log(newMessage)
+
+        }
+        return false
+    }
+
+
+    </script>
+
+
+
+</body>
+</html>
