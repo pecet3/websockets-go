@@ -12,7 +12,7 @@
     <form id="chatroom-select">
         <label for="chatroom" >Chatroom:</label>
         <input type="text" id="chatroom" name="chatroom"><br>
-        <input type="submit" value="Change chatroom">
+        <button type="submit" class="p-1 bg-black text-white rounded-lg">Change</button>
 
     </form>
 
@@ -24,49 +24,73 @@
     <form id="chatroom-message">
         <label for="message">Message:</label>
         <input type="text" id="message" name="message"><br> <br>
-        <input type="submit" valu="Send message">
+        <button type="submit" class="p-1 bg-black text-white rounded-lg">Send</button>
     </form>
 </section>
 
 <script>
-    let selectedChat = "general"
+    let selectedChat = "general";
+    let conn;
 
-    function changeChatRoom(){
-        const newChat = document.getElementById("chatroom")
-
-        if(newChat!== null && newChat.value != selectedChat){
-            console.log(newChat)
-
+    class Event {
+        constructor(type,payload){
+            this.type = type
+            this.payload = payload
         }
-        return false
-
     }
 
-    function sendMessage(){
-        const newMessage = document.getElementById("message")
-
-        if(newChat!== null && newChat.value != selectedChat){
-            console.log(newMessage)
-
+    function routeEvent(event){
+        if (event.type === undefined){
+            alert("no type field in the event")
         }
-        return false
+
+        switch(event.type){
+            
+        }
     }
 
-    window.onload = function (){
-        document.getElementById("chatroom-select").onsubmit = changeChatRoom
-        document.getElementById("chatroom-message").onsubmit = sendMessage
 
-        if(window["WebSocket"])
-        {
-            conn = console.log("supporting websockets")
-            new WebSocket("ws://" + document.location.host + "/ws")
+    function changeChatRoom() {
+        const newChat = document.getElementById("chatroom");
+
+        if (newChat !== null && newChat.value !== selectedChat) {
+            console.log(newChat.value);
+        }
+        return false;
+    }
+
+    function sendMessage() {
+        const newMessage = document.getElementById("message");
+
+        if (newMessage !== null) {
+            conn.send(newMessage.value);
+        }
+        return false;
+    }
+
+    window.onload = function() {
+        document.getElementById("chatroom-select").addEventListener("submit", (e) => {
+            e.preventDefault();
+            changeChatRoom();
+        });
+
+        document.getElementById("chatroom-message").addEventListener("submit", (e) => {
+            e.preventDefault();
+            sendMessage();
+        });
+
+        if (window.WebSocket) {
+            console.log("Supporting websockets");
+            conn = new WebSocket("ws://" + document.location.host + "/ws");
+
+            conn.onmessage = (evt)=>{
+                console.log(evt)
+            }
         } else {
-            alert("Your browser doesn't support websockets")
+            alert("Your browser doesn't support websockets");
         }
-        
-    }   
-    </script>
-
+    };
+</script>
 
 
 </body>
