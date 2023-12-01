@@ -10,10 +10,10 @@ type Event struct {
 type EventHandler func(event Event, c *Client) error
 
 const (
-	EventSendMessage = "send message"
+	EventSendMessage = "send_message"
 )
 
 type SendMessageEvent struct {
-	Message string `json:"message`
+	Message string `json:"message"`
 	From    string `json:"from"`
 }
