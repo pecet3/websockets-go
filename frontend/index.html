@@ -96,8 +96,8 @@
 
     async function login(){
         let formData = {
-            "username": document.getElementById("username"),
-            "password": document.getElementById("password")
+            "username": document.getElementById("username").value,
+            "password": document.getElementById("password").value,
         }
 
         try{
@@ -106,7 +106,7 @@
             body: JSON.stringify(formData),
             mode: "cors"
         })
-
+        console.log(formData)
         if (!response.ok) throw new Error("login error")
 
         const data = await response.json()
@@ -123,6 +123,16 @@
         if (window.WebSocket) {
             console.log("Supporting websockets");
             conn = new WebSocket("ws://" + document.location.host + "/ws?otp=",otp);
+
+            conn.onopen = (evt) => {
+                document.getElementById("connection-header").innerHTML="Connection to websocket: true"
+            }
+
+            conn.onclose = (evt) => {
+                document.getElementById("connection-header").innerHTML="Connection to websocket: false"
+                //reconnection
+            }
+
 
             conn.onmessage = (evt)=>{
                 const eventData = JSON.parse(evt.data)
