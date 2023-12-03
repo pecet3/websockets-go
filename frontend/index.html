@@ -9,6 +9,8 @@
 <body class="bg-slate-900 flex flex-col gap-2 justify-center items-center">
 <section class="bg-blue-500 p-2 rounded-md m-6">
     <h1>Chat</h1>
+    <h3 id="chatroom-header">You are connected to chatroom: general</h3>
+    <h3 id="connection-header">Connected to websocket: false</h3>
     <form id="chatroom-select">
         <label for="chatroom" >Chatroom:</label>
         <input type="text" id="chatroom" name="chatroom"><br>
@@ -25,6 +27,17 @@
         <label for="message">Message:</label>
         <input type="text" id="message" name="message"><br> <br>
         <button type="submit" class="p-1 bg-black text-white rounded-lg">Send</button>
+    </form>
+</section>
+
+<section class="bg-slate-300 p-2 rounded-md">
+    <legend>Login</legend>
+    <form id="login-form" class="flex flex-col gap-2">
+        <label for="username">username: </label>
+        <input type="text" id="username" name="username">
+        <label for="password">password:</label>
+        <input type="password" id="password" name="password">
+        <button type="submit" class="bg-blue-500 rounded-lg p-1">Login</button>
     </form>
 </section>
 
@@ -81,6 +94,46 @@
         return false;
     }
 
+    async function login(){
+        let formData = {
+            "username": document.getElementById("username"),
+            "password": document.getElementById("password")
+        }
+
+        try{
+            const response = await fetch("login",{
+            method: "post",
+            body: JSON.stringify(formData),
+            mode: "cors"
+        })
+
+        if (!response.ok) throw new Error("login error")
+
+        const data = await response.json()
+        
+        await connectWebsocket(data.otp)
+
+        }catch(err){
+            alert(err)
+            return false
+        }
+    }
+
+    function connectWebsocket(otp){
+        if (window.WebSocket) {
+            console.log("Supporting websockets");
+            conn = new WebSocket("ws://" + document.location.host + "/ws?otp=",otp);
+
+            conn.onmessage = (evt)=>{
+                const eventData = JSON.parse(evt.data)
+
+                const event = Object.assign(new Event. eventData)
+            }
+        } else {
+            alert("Your browser doesn't support websockets");
+        }
+    }
+
     window.onload = function() {
         document.getElementById("chatroom-select").addEventListener("submit", (e) => {
             e.preventDefault();
@@ -92,18 +145,11 @@
             sendMessage();
         });
 
-        if (window.WebSocket) {
-            console.log("Supporting websockets");
-            conn = new WebSocket("ws://" + document.location.host + "/ws");
+        document.getElementById("login-form").addEventListener("submit", (e) => {
+            e.preventDefault();
+            login();
+        });
 
-            conn.onmessage = (evt)=>{
-                const eventData = JSON.parse(evt.data)
-
-                const event = Object.assign(new Event. eventData)
-            }
-        } else {
-            alert("Your browser doesn't support websockets");
-        }
     };
 </script>
 
