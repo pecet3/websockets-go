@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"log"
-	"net/http"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -118,16 +117,4 @@ func (c *Client) writeMessages() {
 func (c *Client) pongHandler(pongMsg string) error {
 	log.Println("Pong")
 	return c.connection.SetReadDeadline(time.Now().Add(pongWait))
-}
-
-func checkOrigin(r *http.Request) bool {
-	origin := r.Header.Get("Origin")
-
-	switch origin {
-	case "http://localhost:8080":
-		return true
-
-	default:
-		return false
-	}
 }
