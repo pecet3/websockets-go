@@ -16,7 +16,6 @@ type RetentionMap map[string]OTP
 
 func NewRetentionMap(ctx context.Context, retentionPeriod time.Duration) RetentionMap {
 	rm := make(RetentionMap)
-
 	go rm.Retention(ctx, retentionPeriod)
 
 	return rm

@@ -117,7 +117,7 @@ func (m *Manager) loginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
+	log.Println(req)
 	if req.Username == "jakub" && req.Password == "haslo" {
 		type response struct {
 			OTP string `json:"otp"`
