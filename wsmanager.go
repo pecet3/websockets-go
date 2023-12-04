@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"errors"
 	"log"
 	"net"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -21,14 +24,16 @@ var (
 type Manager struct {
 	clients ClientList
 	sync.RWMutex
+	otps RetentionMap
 
 	handlers map[string]EventHandler
 }
 
-func NewManager() *Manager {
+func NewManager(ctx context.Context) *Manager {
 	m := &Manager{
 		clients:  make(ClientList),
 		handlers: make(map[string]EventHandler),
+		otps:     NewRetentionMap(ctx, 5*time.Second),
 	}
 	m.setupEventHandlers()
 	return m
@@ -55,6 +60,8 @@ func (m *Manager) routeEvent(event Event, c *Client) error {
 }
 
 func (m *Manager) serveWS(w http.ResponseWriter, r *http.Request) {
+
+	////////////////// IP CHECKING ////////////////////////////
 	ip := r.Header.Get("X-Real-IP")
 	if ip == "" {
 		ip = r.Header.Get("X-Forwarded-For")
@@ -84,6 +91,44 @@ func (m *Manager) serveWS(w http.ResponseWriter, r *http.Request) {
 
 	go client.readMeassages()
 	go client.writeMessages()
+}
+
+func (m *Manager) loginHandler(w http.ResponseWriter, r *http.Request) {
+	type userLogin struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
+	var req userLogin
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if req.Username == "jakub" && req.Password == "haslo" {
+		type response struct {
+			OTP string `json:"otp"`
+		}
+
+		otp := m.otps.NewOTP()
+
+		resp := response{
+			OTP: otp.Key,
+		}
+
+		data, err := json.Marshal(resp)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Write(data)
+		return
+	}
+
+	w.WriteHeader(http.StatusUnauthorized)
 }
 
 func (m *Manager) addClient(client *Client) {
