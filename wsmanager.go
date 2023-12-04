@@ -61,6 +61,18 @@ func (m *Manager) routeEvent(event Event, c *Client) error {
 
 func (m *Manager) serveWS(w http.ResponseWriter, r *http.Request) {
 
+	otp := r.URL.Query().Get("otp")
+
+	if otp == "" {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	if !m.otps.VerifyOTP(otp) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 	////////////////// IP CHECKING ////////////////////////////
 	ip := r.Header.Get("X-Real-IP")
 	if ip == "" {
