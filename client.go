@@ -67,6 +67,7 @@ func (c *Client) readMeassages() {
 
 		if err := c.manager.routeEvent(request, c); err != nil {
 			log.Println("error route event", err)
+			break
 		}
 
 	}
