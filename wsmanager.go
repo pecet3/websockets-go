@@ -146,6 +146,7 @@ func (m *Manager) loginHandler(w http.ResponseWriter, r *http.Request) {
 func (m *Manager) addClient(client *Client) {
 	m.Lock()
 	defer m.Unlock()
+	log.Println(m.clients[client])
 	m.clients[client] = true
 }
 
